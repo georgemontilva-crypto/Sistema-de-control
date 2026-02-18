@@ -41,8 +41,37 @@ async function startServer() {
     createExpressMiddleware({
       router: appRouter,
       createContext,
+      onError({ error, type, path, input, ctx, req }) {
+        console.error(`[tRPC Error] ${type} at ${path}:`, error);
+        if (error.code === 'INTERNAL_SERVER_ERROR') {
+          console.error('Error details:', { input, stack: error.stack });
+        }
+      },
     })
   );
+
+  // Global error handler for non-tRPC routes
+  app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+    console.error('[Express Error]:', err);
+    
+    // If headers already sent, delegate to default error handler
+    if (res.headersSent) {
+      return next(err);
+    }
+
+    // Always respond with JSON for API routes
+    if (req.path.startsWith('/api/')) {
+      return res.status(500).json({
+        error: {
+          message: process.env.NODE_ENV === 'development' ? err.message : 'Internal server error',
+          code: 'INTERNAL_SERVER_ERROR'
+        }
+      });
+    }
+
+    // For non-API routes, send generic error
+    res.status(500).send('Internal server error');
+  });
   // development mode uses Vite, production mode uses static files
   if (process.env.NODE_ENV === "development") {
     await setupVite(app, server);

@@ -56,3 +56,6 @@
 - [ ] Documentar estructura de base de datos
 - [ ] Documentar endpoints de API
 - [ ] Crear guía de usuario básica
+
+## Bugs Reportados
+- [x] Corregir error de API que devuelve HTML en lugar de JSON (TRPCClientError)

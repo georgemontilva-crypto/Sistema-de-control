@@ -102,9 +102,14 @@ export async function getUserByOpenId(openId: string) {
 // ============================================
 
 export async function getAllClients() {
-  const db = await getDb();
-  if (!db) return [];
-  return await db.select().from(clients).where(eq(clients.isActive, 1)).orderBy(clients.name);
+  try {
+    const db = await getDb();
+    if (!db) return [];
+    return await db.select().from(clients).where(eq(clients.isActive, 1)).orderBy(clients.name);
+  } catch (error) {
+    console.error('[DB Error] getAllClients:', error);
+    return [];
+  }
 }
 
 export async function getClientById(id: number) {
@@ -147,9 +152,14 @@ export async function searchClients(query: string) {
 // ============================================
 
 export async function getServicesByClient(clientId: number) {
-  const db = await getDb();
-  if (!db) return [];
-  return await db.select().from(services).where(eq(services.clientId, clientId));
+  try {
+    const db = await getDb();
+    if (!db) return [];
+    return await db.select().from(services).where(eq(services.clientId, clientId));
+  } catch (error) {
+    console.error('[DB Error] getServicesByClient:', error);
+    return [];
+  }
 }
 
 export async function getServiceById(id: number) {
@@ -179,13 +189,18 @@ export async function deleteService(id: number) {
 }
 
 export async function getUpcomingRenewals(daysAhead: number = 30) {
-  const db = await getDb();
-  if (!db) return [];
-  const futureDate = new Date();
-  futureDate.setDate(futureDate.getDate() + daysAhead);
-  return await db.select().from(services)
-    .where(eq(services.status, "activo"))
-    .orderBy(services.renewalDate);
+  try {
+    const db = await getDb();
+    if (!db) return [];
+    const futureDate = new Date();
+    futureDate.setDate(futureDate.getDate() + daysAhead);
+    return await db.select().from(services)
+      .where(eq(services.status, "activo"))
+      .orderBy(services.renewalDate);
+  } catch (error) {
+    console.error('[DB Error] getUpcomingRenewals:', error);
+    return [];
+  }
 }
 
 // ============================================
@@ -193,11 +208,16 @@ export async function getUpcomingRenewals(daysAhead: number = 30) {
 // ============================================
 
 export async function getPaymentsByClient(clientId: number) {
-  const db = await getDb();
-  if (!db) return [];
-  return await db.select().from(payments)
-    .where(eq(payments.clientId, clientId))
-    .orderBy(payments.dueDate);
+  try {
+    const db = await getDb();
+    if (!db) return [];
+    return await db.select().from(payments)
+      .where(eq(payments.clientId, clientId))
+      .orderBy(payments.dueDate);
+  } catch (error) {
+    console.error('[DB Error] getPaymentsByClient:', error);
+    return [];
+  }
 }
 
 export async function getPaymentById(id: number) {
@@ -221,19 +241,29 @@ export async function updatePayment(id: number, data: Partial<InsertPayment>) {
 }
 
 export async function getPendingPayments() {
-  const db = await getDb();
-  if (!db) return [];
-  return await db.select().from(payments)
-    .where(eq(payments.status, "pendiente"))
-    .orderBy(payments.dueDate);
+  try {
+    const db = await getDb();
+    if (!db) return [];
+    return await db.select().from(payments)
+      .where(eq(payments.status, "pendiente"))
+      .orderBy(payments.dueDate);
+  } catch (error) {
+    console.error('[DB Error] getPendingPayments:', error);
+    return [];
+  }
 }
 
 export async function getOverduePayments() {
-  const db = await getDb();
-  if (!db) return [];
-  return await db.select().from(payments)
-    .where(eq(payments.status, "vencido"))
-    .orderBy(payments.dueDate);
+  try {
+    const db = await getDb();
+    if (!db) return [];
+    return await db.select().from(payments)
+      .where(eq(payments.status, "vencido"))
+      .orderBy(payments.dueDate);
+  } catch (error) {
+    console.error('[DB Error] getOverduePayments:', error);
+    return [];
+  }
 }
 
 // ============================================
