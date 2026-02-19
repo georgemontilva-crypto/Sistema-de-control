@@ -59,3 +59,4 @@
 
 ## Bugs Reportados
 - [x] Corregir error de API que devuelve HTML en lugar de JSON (TRPCClientError)
+- [ ] Corregir error persistente en /payments que devuelve HTML en lugar de JSON
