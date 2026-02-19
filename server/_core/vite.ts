@@ -57,8 +57,18 @@ export function serveStatic(app: Express) {
   // In development, we need to go from server/_core to dist/public
   const distPath = path.resolve(__dirname, "public");
   
+  console.log('[Static Files] __dirname:', __dirname);
   console.log('[Static Files] Serving from:', distPath);
   console.log('[Static Files] Directory exists:', fs.existsSync(distPath));
+  
+  if (fs.existsSync(distPath)) {
+    const files = fs.readdirSync(distPath);
+    console.log('[Static Files] Contents:', files);
+    if (fs.existsSync(path.join(distPath, 'assets'))) {
+      const assetFiles = fs.readdirSync(path.join(distPath, 'assets'));
+      console.log('[Static Files] Assets folder:', assetFiles.slice(0, 5));
+    }
+  }
   if (!fs.existsSync(distPath)) {
     console.error(
       `Could not find the build directory: ${distPath}, make sure to build the client first`
