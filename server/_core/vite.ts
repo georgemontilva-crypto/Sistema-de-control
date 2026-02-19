@@ -53,10 +53,12 @@ export async function setupVite(app: Express, server: Server) {
 }
 
 export function serveStatic(app: Express) {
-  const distPath =
-    process.env.NODE_ENV === "development"
-      ? path.resolve(__dirname, "../..", "dist", "public")
-      : path.resolve(__dirname, "public");
+  // In production, __dirname points to dist/ so we need to go to dist/public
+  // In development, we need to go from server/_core to dist/public
+  const distPath = path.resolve(__dirname, "public");
+  
+  console.log('[Static Files] Serving from:', distPath);
+  console.log('[Static Files] Directory exists:', fs.existsSync(distPath));
   if (!fs.existsSync(distPath)) {
     console.error(
       `Could not find the build directory: ${distPath}, make sure to build the client first`
